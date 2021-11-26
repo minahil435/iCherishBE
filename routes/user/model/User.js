@@ -11,10 +11,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  post: [{ type: mongoose.Schema.ObjectId, ref: "memory" }],
   userImage: {
     type: String,
   },
+  postArray: [{ type: mongoose.Schema.ObjectId, ref: "memory" }]
 });
 
 module.exports = mongoose.model("user", userSchema);

@@ -27,11 +27,12 @@ async function signup(req, res, next) {
       {
         email: newUser.email,
         userImage: newUser.userImage,
-        userName: newUser.userName
+        userName: newUser.userName,
+        postArray: newUser.postArray
       },
       process.env.PRIVATE_JWT_KEY,
       {
-        expiresIn: "5d",
+        expiresIn: "3d",
       }
     );
 
@@ -73,11 +74,12 @@ async function login(req, res) {
           {
             email: foundUser.email,
             userName: foundUser.userName,
-            userImage: foundUser.userImage
+            userImage: foundUser.userImage,
+            postArray: foundUser.postArray
           },
           process.env.PRIVATE_JWT_KEY,
           {
-            expiresIn: "5d",
+            expiresIn: "3d",
           }
         );
 

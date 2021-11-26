@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const MemorySchema = new mongoose.Schema({
     title: String,
     message:String,
+    location : String,
     creatorName: {
         type: String,
     },
     creatorEmail: {
         type: String,
     },
-    momoryImage: {
+    memoryImage: {
         type: String,
     },
     category: {

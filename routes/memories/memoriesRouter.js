@@ -21,17 +21,22 @@ const upload = multer({ storage: storage, limits: { filesize: 1024 * 1024 * 5 } 
 const {
     savePost,
     getAllPosts,
-//     deleteRecipeById,
-//     alreadylikedRecipe
+    deletePostById,
+    likePost,
+    getAllFavoritePosts,
+    getAllUserPosts
 } = require("../memories/controller/memoriesController")
 
 router.get("/",(req,res) => {
     res.send("This Works")
 })
 router.get("/get-all-Posts", getAllPosts);
+router.get("/get-all-favorite-posts", getAllFavoritePosts);
 // router.post("/save-Post", jwtMiddleware, saveRecipe);
-router.post("/save-Post", upload.single('postImage'),savePost);
-// router.delete("/delete-recipe-by-id/:id", jwtMiddleware, deleteRecipeById);
-// router.post("/already-liked-Recipe", jwtMiddleware, alreadylikedRecipe)
+router.post("/save-Post", upload.single('memoryImage'), savePost);
+// router.delete("/delete-post-by-id/:id", jwtMiddleware, deletePostById);
+router.delete("/delete-post-by-id/:id",  deletePostById);
+router.post("/liked-post", likePost)
+router.get("/get-all-user-posts", getAllUserPosts);
 
 module.exports = router;

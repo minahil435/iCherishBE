@@ -1,12 +1,9 @@
 const Post = require("../model/Memories")
-
+const User = require("../../user/model/User.js");
 
 const getAllPosts = async (req, res) => {
     try {
-        const { category , limit } = req.body;
-        let limiter = parseInt(limit, 10)
-        let payload = await Post.find({ category: category }).limit(limiter).sort({ LikeCount: 'descending' })
-        console.log(payload)
+        let payload = await Post.find({ category: req.query.category}).limit(30).sort({ LikeCount: 'descending' })
         res.json(payload);
     } catch (e) {
         res.status(500).json({ e: e, message: e.message });
@@ -15,88 +12,99 @@ const getAllPosts = async (req, res) => {
 
 const savePost = async (req, res) => {
     try {
-        const { title, message, creatorName, category, creatorEmail } = req.body;
-        console.log(req.body)
-
+        const { title, message, location, creatorName, category, creatorEmail } = req.body;
+     
         const newPost = new Post ({
             title,
             message,
+            location,
             creatorName,
             creatorEmail,
             category,
-            momoryImage: req.file.path
+            memoryImage: req.file.path
         });
 
         const savedNewPost = await newPost.save();
-        //when you saved a friend - an ID is created from the databse
-        // const { decodedJwt } = res.locals;
-        // console.log(res.locals);
-        //now we have to find the user ID
-        // const foundTargetUser = await User.findOne({ email: decodedJwt.email })
-
-        // foundTargetUser.recipes.push(savedNewRecipe._id);
-
-        // await foundTargetUser.save();
-
         res.json(savedNewPost);
     } catch (e) {
         res.status(500).json({ e: e, message: e.message });
     }
 };
 
+const likePost = async (req, res) => {
+    try {
+        const { _id, email} = req.body;
+        const foundTargetUser = await User.findOne({ email: email})
+        foundTargetUser.postArray.push(_id);
+        await foundTargetUser.save();
 
-// const alreadylikedRecipe = async (req, res) => {
-//     try {
-//         const { idMeal } = req.body;
-//         console.log("hi", req.body.idMeal)
-//         const { decodedJwt } = res.locals;
-//         const foundTargetUser = await User.findOne({ email: decodedJwt.email }).populate({
-//             path: "recipes",
-//             model: Recipe,
-//             select: "-__v",
-//         })
-//             .select("-firstName -lastName -__v -_id ");
+        const foundTargetPost = await Post.findOne({ _id: _id })
+        const filter = { _id: _id };
+        const update = { LikeCount: foundTargetPost.LikeCount  + 1 };
+        const opts = { new: true };
 
-//         let found = false
-
-//         foundTargetUser.recipes.forEach(element => {
-//             console.log(element.idMeal)
-//             if (element.idMeal === idMeal) {
-//                 found = true
-//             }
-//         });
-
-//         res.json({ message: "success", payload: found });
-//     } catch (e) {
-//         res.status(500).json({ e: e, message: e.message });
-//     }
-// };
+         await Post.findOneAndUpdate(filter, update, opts)    
+        res.json("sucessful");
+    } catch (e) {
+        res.status(500).json({ e: e, message: e.message });
+    }
+};
 
 
+const deletePostById = async (req, res, next) => {
+    try {
+        let deletedPost = await Post.findByIdAndRemove(req.params.id);
 
-// const deleteRecipeById = async (req, res, next) => {
-//     try {
-//         let deletedRecipe = await Recipe.findByIdAndRemove(req.params.id);
+        // const { decodedJwt } = res.locals;
+        // let foundUser = await User.findOne({ email: decodedJwt.email });
 
-//         const { decodedJwt } = res.locals;
-//         let foundUser = await User.findOne({ email: decodedJwt.email });
-//         let foundUserArray = foundUser.recipes;
-//         let filteredRecipesArray = foundUserArray.filter((id) => {
-//             id.toString() !== deletedRecipe._id.toString();
-//         });
+        // let foundUserArray = foundUser.recipes;
+        // let filteredRecipesArray = foundUserArray.filter((id) => {
+        //     id.toString() !== deletedRecipe._id.toString();
+        // });
 
-//         foundUser.recipes = filteredRecipesArray;
-//         await foundUser.save();
+        // foundUser.recipes = filteredRecipesArray;
+        // await foundUser.save();
 
-//         res.json({ message: "success", payload: deletedRecipe });
-//     } catch (e) {
-//         next(e);
-//     }
-// };
+        res.json({ message: "success", payload: deletedPost });
+    } catch (e) {
+        next(e);
+    }
+};
+
+const getAllFavoritePosts = async (req, res) => {
+    try {
+        let payload = await User.find({ email: req.query.email })
+            .populate({
+                path: "postArray",
+                model: Post,
+                select: "-__v",
+            })
+            .select("-email -password  -__v -_id -userImage -userName");
+        res.json(payload[0].postArray);
+    } catch (e) {
+        res.status(500).json({ e: e, message: e.message });
+    }
+};
+
+const getAllUserPosts = async (req, res) => {
+    try {
+        let payload = await Post.find({ creatorEmail: req.query.email , category: req.query.category }).sort({ LikeCount: 'descending' })
+        console.log(payload)
+        res.json(payload);
+    } catch (e) {
+        res.status(500).json({ e: e, message: e.message });
+    }
+};
+
+
+
 
 module.exports = {
     getAllPosts,
     savePost,
-//     deleteRecipeById,
-//     alreadylikedRecipe
+    deletePostById,
+    likePost,
+    getAllFavoritePosts,
+    getAllUserPosts
 }
