@@ -9,6 +9,7 @@ var mongoose = require("mongoose");
 const ErrorMessageHandlerClass = require("./routes/utils/ErrorMessageHandlerClass");
 const errorController = require("./routes/utils/errorController");
 const memoriesRouter = require("./routes/memories/memoriesRouter");
+const commentRouter = require("./routes/comments/commentsRouter");
 const userRouter = require("./routes/user/userRouter");
 
 mongoose
@@ -33,6 +34,7 @@ app.use('/api/uploads', express.static('uploads'));
 app.use('/api/Postuploads', express.static('Postuploads'));
 app.use("/api/memories", memoriesRouter)
 app.use("/api/user", userRouter)
+app.use("/api/comment", commentRouter)
 
 app.all("*", function (req, res, next) {
     next(

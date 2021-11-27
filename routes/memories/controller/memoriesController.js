@@ -1,9 +1,15 @@
 const Post = require("../model/Memories")
 const User = require("../../user/model/User.js");
+const Comment = require("../../comments/model/comments");
 
 const getAllPosts = async (req, res) => {
     try {
-        let payload = await Post.find({ category: req.query.category}).limit(30).sort({ LikeCount: 'descending' })
+ 
+        let payload = await Post.find({ category: req.query.category }).limit(30).sort({ LikeCount: 'descending' }).populate({
+            path: "comments",
+            model: Comment,
+            select: "-__v",
+        }).sort({ createdAt: 'descending' }).select("-__v ");
         res.json(payload);
     } catch (e) {
         res.status(500).json({ e: e, message: e.message });

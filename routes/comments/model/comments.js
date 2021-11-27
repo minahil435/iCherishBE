@@ -6,11 +6,7 @@ const CommentSchema = new mongoose.Schema({
     creatorImage: {
         type: String,
     },
-    creatorEmail: {
-        type:String,
-        unique: true
-    },
-    CreatedAt: {
+    createdAt: {
         type: Date,
         default: new Date()
     },
