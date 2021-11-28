@@ -56,22 +56,9 @@ const likePost = async (req, res) => {
     }
 };
 
-
 const deletePostById = async (req, res, next) => {
     try {
         let deletedPost = await Post.findByIdAndRemove(req.params.id);
-
-        // const { decodedJwt } = res.locals;
-        // let foundUser = await User.findOne({ email: decodedJwt.email });
-
-        // let foundUserArray = foundUser.recipes;
-        // let filteredRecipesArray = foundUserArray.filter((id) => {
-        //     id.toString() !== deletedRecipe._id.toString();
-        // });
-
-        // foundUser.recipes = filteredRecipesArray;
-        // await foundUser.save();
-
         res.json({ message: "success", payload: deletedPost });
     } catch (e) {
         next(e);
@@ -102,9 +89,6 @@ const getAllUserPosts = async (req, res) => {
         res.status(500).json({ e: e, message: e.message });
     }
 };
-
-
-
 
 module.exports = {
     getAllPosts,

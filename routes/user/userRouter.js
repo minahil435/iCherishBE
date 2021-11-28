@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage , limits :{filesize: 1024 * 1024 * 5}})
 
-const { signup, login } = require("./controller/userController");
+const { signup, login, getLikedPostArray} = require("./controller/userController");
 const checkIsUndefined = require("./helper/checkIsUndefined")
 const checkIsEmptyFunc = require("./helper/checkIsEmptyFunc");
 const checkIsStrongPasswordFunc = require("./helper/checkIsStrongPasswordFunc");
@@ -42,6 +42,11 @@ router.post(
   checkIsEmptyFunc,
   checkIsEmailFunc,
   login
+);
+
+router.get(
+  "/getLikePostID",
+  getLikedPostArray
 );
 
 module.exports = router;
